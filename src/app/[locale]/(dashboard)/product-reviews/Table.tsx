@@ -21,7 +21,7 @@ import { toast } from 'react-toastify';
 import Pagination from '@/app/[locale]/components/Pagination'
 import Breadcrumb from "@/app/[locale]/components/Breadcrumb";
 import { redirect } from "next/navigation";
-import { toUpperCase } from "../../../../../nextjs-test/_node_modules/uri-js/dist/esnext/util";
+//import { toUpperCase } from "../../../../../nextjs-test/_node_modules/uri-js/dist/esnext/util";
 import { approveProductReview,deleteProductReview } from '@/utils/actions/product-reviews/actions'
 
 interface ProductReview {
@@ -194,7 +194,7 @@ const ListTable = ({productReviews, meta, refreshProductReviewsList}: ListTableP
                                     </Link>
                                 </TableCell>
                                 <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                    {toUpperCase(item.status)}
+                                    {item.status.toUpperCase()}
                                 </TableCell>
                                 <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                     <Link href={`/${currentLocale}/products/${item?.product?.id}`} target="_blank" className="text-blue-600 hover:underline">
