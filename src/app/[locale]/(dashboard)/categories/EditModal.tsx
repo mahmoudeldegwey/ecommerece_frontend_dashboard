@@ -46,7 +46,7 @@ const EditModal = ({ isOpen, onClose, refreshCategoriesList, categoryData }: Edi
         name: '',
         name_ar: '',
         parent_id: '',
-        image: null
+        image: null as File | null
     });
 
     useEffect(() => {
@@ -55,11 +55,16 @@ const EditModal = ({ isOpen, onClose, refreshCategoriesList, categoryData }: Edi
                 name: categoryData.name || '',
                 name_ar: categoryData.name_ar || '',
                 parent_id: categoryData.parent_id || '',
-                image: categoryData.image || null
             });
         }
 
     }, [categoryData]);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFormData({ ...formData, image: e.target.files[0] });
+        }
+    };
 
     const handleSubmit = () => {
         editCategory(
@@ -79,6 +84,7 @@ const EditModal = ({ isOpen, onClose, refreshCategoriesList, categoryData }: Edi
             toast.error(error.message);
         });
     };
+
 
     console.log(formData,'formData');
 
@@ -126,7 +132,9 @@ const EditModal = ({ isOpen, onClose, refreshCategoriesList, categoryData }: Edi
                         
                         <FileInput
                             id="file"
-                            onChange={(e) => setFormData({ ...formData, image: e.target.files?.[0] || null })}
+                            onChange={handleFileChange}
+                            accept="image/*"
+                            required
                         />
                         <div className="mt-2 text-right">
                             {formData.image && (

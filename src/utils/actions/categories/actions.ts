@@ -48,6 +48,11 @@ export const createCategory = async (token: string, name: string, name_ar: strin
             body: formData,
         });
 
+        if(response.status === 422){
+            const errors = await response.json();
+            throw new Error(Object.values(errors.errors)[0][0]);
+        }
+
         if (!response.ok) {
             throw new Error('Failed to create category');
         }
@@ -72,14 +77,21 @@ export const editCategory = async (token: string, id: number, name: string, name
             formData.append('image', image);
         }
 
+        console.log(formData,'formData category')
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/categories/${id}`, {
-            method: 'PUT',
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
+                //'Content-Type': 'multipart/form-data',
             },
             body: formData,
         });
+
+        if(response.status === 422){
+            const errors = await response.json();
+            throw new Error(Object.values(errors.errors)[0][0]);
+        }
 
         if (!response.ok) {
             throw new Error('Failed to update category');
