@@ -363,7 +363,10 @@
       "customer_name":"Customer Name",
       "items_count":"Items Count",
       "last_updated":"Last Updated",
-      "order_summary":"Order Summary"
+      "order_summary":"Order Summary",
+      "order_items":"Order Items",
+      "product":"Product",
+      "sku":"SKU"
     },
     "AnnouncementsPage":{
       "announcements":"Announcements",

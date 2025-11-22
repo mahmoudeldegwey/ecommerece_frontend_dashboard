@@ -3,17 +3,20 @@
 import { Card, Badge, Button, Table, Pagination } from 'flowbite-react';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
-import {getOrder, updateOrderStatus} from '@/utils/actions/orders/actions'
+import {getOrder, updateOrderStatus, downloadInvoice} from '@/utils/actions/orders/actions'
 import { useState,useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { use } from 'react';
 import parsePrice from "@/utils/helpers";
+import Link from 'next/link';
+import { useLocale } from "next-intl";
 
 export default function OrderDetails ({params}:{
     params: Promise<{id: string, locale: string}>
 }) {
   const { id, locale } = use(params);
+  const currentLocale = useLocale();
 
   const t = useTranslations('orderDetailsPage');
   const session = useSession();
@@ -22,6 +25,7 @@ export default function OrderDetails ({params}:{
 
   // State for order status and pagination
   const [currentStatus, setCurrentStatus] = useState(order.status || '');
+  const [previewing, setPreviewing] = useState(false);
 
   // Order status options
   const statusOptions = [
@@ -80,8 +84,18 @@ export default function OrderDetails ({params}:{
   };
 
   const handleDownloadInvoice = () => {
-    //toast.success('Invoice downloaded successfully!');
-    // Download functionality would go here
+    setPreviewing(true);
+
+    downloadInvoice(session?.data?.user?.token, id).then(async result => {
+      // Open in new tab
+      const blob = await result.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      
+      // Cleanup after a delay
+      setTimeout(() => window.URL.revokeObjectURL(url), 100)
+    })
+
   };
 
   const handleTrackOrder = () => {
@@ -114,9 +128,9 @@ export default function OrderDetails ({params}:{
           </p>
         </div>
         <div className="flex space-x-3">
-          <Button color="gray" onClick={handlePrintOrder}>
+          {/* <Button color="gray" onClick={handlePrintOrder}>
             {t('print_order')}
-          </Button>
+          </Button> */}
           <Button color="blue" onClick={handleDownloadInvoice}>
             {t('download_invoice')}
           </Button>
@@ -239,7 +253,7 @@ export default function OrderDetails ({params}:{
       {/* Products Table with Pagination */}
       <Card>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Order Items</h2>
+          <h2 className="text-xl font-semibold">{t('order_items')}</h2>
           <div className="text-sm text-gray-500">
             
           </div>
@@ -247,11 +261,11 @@ export default function OrderDetails ({params}:{
         <div className="overflow-x-auto">
           <Table>
             <Table.Head>
-              <Table.HeadCell>Product</Table.HeadCell>
-              <Table.HeadCell>SKU</Table.HeadCell>
-              <Table.HeadCell>Price</Table.HeadCell>
-              <Table.HeadCell>Quantity</Table.HeadCell>
-              <Table.HeadCell>Total</Table.HeadCell>
+              <Table.HeadCell>{t('product')}</Table.HeadCell>
+              <Table.HeadCell>{t('sku')}</Table.HeadCell>
+              <Table.HeadCell>{t('price')}</Table.HeadCell>
+              <Table.HeadCell>{t('quantity')}</Table.HeadCell>
+              <Table.HeadCell>{t('total')}</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {products?.map((product) => (
@@ -260,7 +274,12 @@ export default function OrderDetails ({params}:{
                     <img src={product?.product?.main_image} alt={product?.product?.name} className="w-10 h-10 object-cover rounded" />
                     <span>{product?.product?.name}</span>
                   </Table.Cell>
-                  <Table.Cell>{product?.product?.sku}</Table.Cell>
+                  <Table.Cell>
+                    <Link href={`/${currentLocale}/products/${product.product_id}`} target='_blank'>
+                      {product?.product?.sku}
+                    </Link>
+                  </Table.Cell>
+  
                   <Table.Cell>{product?.product?.sale_price != null ? product?.product?.sale_price : product?.product?.price}</Table.Cell>
                   <Table.Cell>{product?.product_quantity}</Table.Cell>
                   <Table.Cell>

@@ -71,3 +71,26 @@ export const updateOrderStatus = async (token: string, oder_id: number = 1, stat
         throw error;
     }
 };
+
+export const downloadInvoice = async (token: string, oder_id: number = 1) => {
+    try{    
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/invoice/${oder_id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/pdf',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to preview invoice');
+        }
+
+        return response;
+        
+    } catch (error){
+        console.error('Error:', error);
+        throw error;
+    }
+};
