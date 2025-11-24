@@ -26,6 +26,11 @@ const SettingPage = () => {
         default_language: "en",
         default_currency: "USD",
         default_country: "EGY",
+        instapay_enable:0,
+        instapay_tag:"",
+        instapay_bankname:"",
+        instapay_account_number:"",
+        instapay_company_name:""
     });
 
     // Fetch settings data
@@ -36,7 +41,6 @@ const SettingPage = () => {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${session?.user?.token}`,
-                    "ngrok-skip-browser-warning": "true",
                 },
             });
 
@@ -47,13 +51,12 @@ const SettingPage = () => {
             const data = await response.json();
 
             // Map fetched data to form fields
-            const updatedFormData = { ...formData };
-            
-            data.data.forEach((setting) => {
-                updatedFormData[setting.key] = setting.value;
+            Object.entries(data).forEach(([key, value]) => {
+                setFormData((prev) => ({
+                    ...prev,
+                    [key]: value ?? "",
+                }));
             });
-            
-            setFormData(updatedFormData);
 
         } catch (e) {
             console.error("Something went wrong:", e);
@@ -126,11 +129,19 @@ const SettingPage = () => {
                     <h1 className="font-bold mb-4">{t('settings')}</h1>
                     <Tabs aria-label="Full width tabs" variant="fullWidth">
                         <Tabs.Item active title={t('general')} icon={IoSettingsOutline}>
-                           <GeneralForm formData={formData} handleChange={handleChange} saveSettings={saveSettings} />
+                           <GeneralForm 
+                           formData={formData} 
+                           handleChange={handleChange} 
+                           saveSettings={saveSettings} 
+                           />
                         </Tabs.Item>
 
                         <Tabs.Item title={t('payments')} icon={MdPayment}>
-                            <PaymentForm />
+                            <PaymentForm 
+                            formData={formData} 
+                            handleChange={handleChange} 
+                            saveSettings={saveSettings}
+                            />
                         </Tabs.Item>   
                     </Tabs>
                 </div>
