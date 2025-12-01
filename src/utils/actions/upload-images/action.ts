@@ -1,5 +1,4 @@
-
-export const uploadImage = async (token: string, data: {
+export const uploadImage = async (token: string, data: {    
     model_id: string | number;
     model_type: string; 
     destination: string; 
@@ -22,10 +21,37 @@ export const uploadImage = async (token: string, data: {
             },
             body: formData,
         });
-        console.log('Response:', response);
-        // if (!response.ok) {
-        //     throw new Error('Failed to upload image');
-        // }
+
+        if (!response.ok) {
+            throw new Error('Failed to upload image');
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+
+};
+
+export const deleteImage = async (token: string,image_id: string | number , destination: string ) => {
+    try {
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/upload-image/${image_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ destination:destination }),
+        });
+
+        console.log('Delete response status:', response);
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete image: ${response.status}`);
+        }
 
         return await response.json();
     } catch (error) {

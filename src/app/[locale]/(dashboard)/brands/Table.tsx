@@ -16,13 +16,14 @@ import {
 
 import CreateModal from "./CreateModal";
 import EditModal from "./EditModal";
-
+import Link from "next/link";
 import {useTranslations} from 'next-intl';
 import {deleteBrand, brandSingle} from '@/utils/actions/brands/actions'
 import { useSession } from 'next-auth/react'
 import { toast } from 'react-toastify';
 import Pagination from '@/app/[locale]/components/Pagination'
 import Breadcrumb from "@/app/[locale]/components/Breadcrumb";
+import { HiSearch } from "react-icons/hi";
 
 const ListTable = ({brands, meta, refreshBrandsList}) => {
     
@@ -30,15 +31,16 @@ const ListTable = ({brands, meta, refreshBrandsList}) => {
 
     const t = useTranslations('BrandsPage');
     const t_general = useTranslations('General');
-
-    const [searchTerm, setSearchTerm] = useState("");
-
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
 
     const [brandData, setBrandData] = useState({ id: 0, name: '' });
 
     const [selectedAllBrands, setSelectedAllBrands] = useState<number[]>([]);
+
+    // Filter states
+    const [filters, setFilters] = useState({ name: '',});
 
     const isAllChecked = selectedAllBrands.length === brands.length && brands.length > 0;
 
@@ -78,85 +80,118 @@ const ListTable = ({brands, meta, refreshBrandsList}) => {
         setSelectedAllBrands(IncludeID);
     };
     
-    const brandSearch = () => {
-        refreshBrandsList(1, {name: searchTerm});
-    }
+    const handleFilterChange = (key: string, value: string) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
+    };
+
+    const applyFilters = () => {
+        const params: any = {};
+        if (filters.name) params.name = filters.name;
+
+        refreshBrandsList(1, params);
+    };
+
 
     return (
-        <div className="overflow-x-auto p-4">
+        <div className="p-4 space-y-4">
             <Breadcrumb />
             {/* Header Section */}
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex">
-                    <TextInput 
-                        className="w-60"
-                        placeholder={t('search_brands')}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    
-                    <Button className="ml-2" onClick={() => brandSearch()}>
-                        {t_general('search')}
-                    </Button>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    {/* Search Bar */}
+                    <div className="flex-1 flex gap-2">
+                        <div className="relative flex-1 max-w-md">
+                            <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <TextInput 
+                                className="pl-10"
+                                placeholder={t('search_brands') || "Search by name"}
+                                value={filters.name}
+                                onChange={(e) => handleFilterChange('name', e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && applyFilters()}
+                            />
+                        </div>
+                        
+                        <Button color="blue" onClick={applyFilters}>
+                            <HiSearch className="w-4 h-4 mr-2" />
+                            {t_general('search') || 'Search'}
+                        </Button>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                        
+                        {selectedAllBrands.length > 0 && (
+                        <button 
+                            onClick={() => handleAllDelete()} 
+                            className="bg-red-600 text-white px-4 py-2 rounded-md ml-2 border border-red-600"
+                        >
+                            {t_general('delete')} ({selectedAllBrands.length})
+                        </button>
+                        )}
+
+                        <Link href="#" onClick={() => setIsModalOpen(true)} 
+                            className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                            {t('create_brand')}
+                        </Link>
+                        
+
+
+                    </div>
                 </div>
-                <div className="flex">
-                    <Button onClick={() => setIsModalOpen(true)} color="green" className="text-black hover:bg-transparent">
-                        {t('create_brand')}
-                    </Button>
-                    <button 
-                        onClick={() => handleAllDelete()} 
-                        className="bg-red-600 text-white px-4 py-2 rounded-md ml-2 border border-red-600"
-                    >
-                        {t_general('delete')}
-                    </button>
-                </div>
+
             </div>
 
             {/* Table */}
-            <Table hoverable>
-                <TableHead>
-                    <TableHeadCell className="p-4">
-                        <Checkbox checked={isAllChecked} onChange={() => handleSelectAllCheckBox()} />
-                    </TableHeadCell>
-                    <TableHeadCell>{t_general("name")}</TableHeadCell>
-                    <TableHeadCell>{t_general("actions")}</TableHeadCell>
-                </TableHead>
-                <TableBody className="divide-y">
-                    {brands.length > 0 ? (
-                        brands.map((item) => (
-                            <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                <TableCell className="p-4">
-                                    <Checkbox 
-                                        checked={selectedAllBrands.includes(item.id)} 
-                                        onChange={() => handleSelectCheckBox(item.id)} 
-                                    />
-                                </TableCell>
-                                <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                    {item.name}
-                                </TableCell>
-                                <TableCell className="flex gap-2">
-                                    <Button size="xs" color="blue" onClick={() => handleEdit(item.id)}>{t_general('edit')}</Button>
-                                    <Button size="xs" color="red" onClick={() => handleDelete(item.id)}>{t_general('delete')}</Button>
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={6} className="text-center p-4">
-                                {t('no_brands_found')}.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <Table hoverable>
+                        <TableHead>
+                            <TableHeadCell className="p-4">
+                                <Checkbox checked={isAllChecked} onChange={() => handleSelectAllCheckBox()} />
+                            </TableHeadCell>
+                            <TableHeadCell>{t_general("name")}</TableHeadCell>
+                            <TableHeadCell>{t_general("actions")}</TableHeadCell>
+                        </TableHead>
+                        <TableBody className="divide-y">
+                            {brands.length > 0 ? (
+                                brands.map((item) => (
+                                    <TableRow key={item.id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                        <TableCell className="p-4">
+                                            <Checkbox 
+                                                checked={selectedAllBrands.includes(item.id)} 
+                                                onChange={() => handleSelectCheckBox(item.id)} 
+                                            />
+                                        </TableCell>
+                                        <TableCell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                            {item.name}
+                                        </TableCell>
+                                        <TableCell className="flex gap-2">
+                                            <Button size="xs" color="blue" onClick={() => handleEdit(item.id)}>{t_general('edit')}</Button>
+                                            <Button size="xs" color="red" onClick={() => handleDelete(item.id)}>{t_general('delete')}</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="text-center p-4">
+                                        {t('no_brands_found')}.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
 
             {/* Pagination */}
+            {brands.length > 0 && (
             <div className="flex justify-center mt-4">
                 <Pagination 
                     meta={meta}
                     handlePageChange={refreshBrandsList}
                 />
             </div>
+            )}
 
             {/* Create Modal */}
             <CreateModal 

@@ -51,7 +51,8 @@
       "inactive":"Inactive",
       "status":"Status",
       "created_at":"Created At",
-      "updated_at":"Updated At"
+      "updated_at":"Updated At",
+      "filters":"Filters"
     },
     "Validation":{
       "email_required":"Email must be at least 6 characters long",
@@ -188,7 +189,7 @@
     "BrandsPage": {
       "brands": "Brands",
       "brand_name": "Brand Name",
-      "search_brands": "Search Brands",
+      "search_brands": "Search Brands by name",
       "create_brand": "Create Brand",
       "edit_brand": "Edit Brand",
       "no_brands_found": "No Brands Found"
@@ -206,7 +207,7 @@
     "SizesPage":{
       "sizes":"Sizes",
       "size_name":"Size Name",
-      "search_size":"Search Sizes",
+      "search_sizes":"Search Sizes",
       "create_size":"Create Size",
       "edit_size":"Edit Size",
       "no_sizes_found":"No Sizes Found"
@@ -214,7 +215,7 @@
     "ColorsPage":{
       "colors":"Colors",
       "color_name":"Color Name",
-      "search_color":"Search Colors",
+      "search_colors":"Search Colors by name",
       "create_color":"Create Color",
       "edit_color":"Edit Color",
       "no_colors_found":"No Colors Found",
@@ -234,7 +235,9 @@
       "amount":"Amount",
       "usage":"Usage",
       "fixed":"Fixed",
-      "percentage":"Percentage"
+      "percentage":"Percentage",
+      "used_count":"Used Count",
+      "max_usage":"Max Usage"
     },
     "ProductsPage":{
       "create_product": "Create Product",
@@ -253,7 +256,10 @@
       "has_free_shipping":"Has Free Shipping",
       "quantity":"Quantity",
       "search_products":"Search Products",
-      "no_products_found":"No Products Found"
+      "no_products_found":"No Products Found",
+      "stock_status":"Stock Status",
+      "in_stock":"In Stock",
+      "out_of_stock":"Out of Stock"
     },
     "EditProduct":{
       "Edit_product":"Edit Product",
@@ -314,7 +320,7 @@
       "products_count":"Products Count",
       "products_quantity":"Products Quantity",
       "status":"Status",
-      "search_orders":"Search Orders",
+      "search_orders":"Search Orders by Order Number",
       "no_orders_found":"No Orders Found",
       "client":"Client",
       "date":"Date",
@@ -330,7 +336,8 @@
       "view_order":"View Order",
       "update_status":"Update Status",
       "status_updated":"Status updated successfully!",
-      "status_update_failed":"Failed to update status, please try again"
+      "status_update_failed":"Failed to update status, please try again",
+      "order_status":"Order Status"
     },
     "orderDetailsPage":{
       "order":"Order",
@@ -371,21 +378,22 @@
     "AnnouncementsPage":{
       "announcements":"Announcements",
       "announcement_name":"Announcement Name",
-      "search_announcement":"Search Announcements",
+      "search_announcement":"Search Announcements by name",
       "create_announcement":"Create Announcement",
       "edit_announcement":"Edit Announcement",
       "no_announcements_found":"No Announcements Found",
       "message":"Message",
       "start_at":"Start Date",
       "end_at":"End Date",
-      "is_active":"Is Active",
-      "no_data_found":"No Data Found"
+      "status":"status",
+      "no_data_found":"No Data Found",
+      "is_active":"Is Active"
 
     },
     "productReviewsPage":{
       "product_reviews":"Product Reviews",
       "product_review_name":"Product Review Name",
-      "search_product_reviews":"Search Product Reviews",
+      "search_product_reviews":"Search reviews by product, username...",
       "no_product_reviews_found":"No Product Reviews Found",
       "username":"Username",
       "email":"Email",

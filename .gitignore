@@ -40,3 +40,4 @@ next-env.d.ts
 .vercel
 
 /public/images
+.vscode/
